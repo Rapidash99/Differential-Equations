@@ -67,12 +67,6 @@ def read():
             if x_step <= 0:
                 print("Grid step by x must be positive\nPlease, try again")
                 continue
-            elif x_step < 0.5:
-                print("Do you really want to choose this grid step?\nIt will be unreadable\nWrite again if you are sure\nWrite something other if you want to try again")
-                if x_step == float(input()):
-                    break
-                else:
-                    continue
             break
         except ValueError:
             print("Grid step by x must be a float value\nPlease, try again")
@@ -85,12 +79,6 @@ def read():
             if y_step <= 0:
                 print("Grid step by y must be positive\nPlease, try again")
                 continue
-            elif x_step < 1:
-                print("Do you really want to choose this grid step?\nIt will be unreadable\nWrite again if you are sure\nWrite something other if you want to try again")
-                if x_step == float(input()):
-                    break
-                else:
-                    continue
             break
         except ValueError:
             print("Grid step by y must be a float value\nPlease, try again")
