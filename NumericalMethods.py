@@ -27,6 +27,9 @@ def read():
     while True:
         try:
             X = float(input())
+            if X < x0:
+                print("X must be above x0\nPlease, try again")
+                continue
             break
         except ValueError:
             print("X must be a float value\nPlease, try again")
@@ -72,7 +75,6 @@ class NumericalMethods:
 
         self.x = np.linspace(x0, X, count)  # x-axis is the same for each method, so just x
         self.h = self.x[1] - self.x[0]  # step h
-        print(self.h)
         self.y1 = np.zeros(count)  # creating array of y's for Euler method and filling it by 0's
         self.y2 = self.y1.copy()  # creating array of y's for Improved Euler method and filling it by 0's
         self.y3 = self.y1.copy()  # creating array of y's for Runge-Kutta method and filling it by 0's
@@ -122,12 +124,17 @@ class NumericalMethods:
         x = self.x
         y = self.y4
 
-        """y = c * e^(-x) - x + 1"""
+        """
+        y' = -y - x
+        y = c * e^(-x) - x + 1
+        c = (y + x - 1) / (e^(-x))
+        y = c * e^(-x) - x + 1
+        """
 
         c = (self.y0 + self.x0 - 1) / exp(-self.x0)
 
         for i in range(self.count):
-            y[i] = (c * exp(-x[i])) -x[i] + 1
+            y[i] = (c * exp(-x[i])) - x[i] + 1
 
     """Function that calculates each plot"""
 
@@ -146,7 +153,7 @@ class NumericalMethods:
     Function that draws 3 plots:
     1) Exact solution
     2) Euler, Improved Euler, Runge-Kutta solutions
-    3) Truncation errors for 2)
+    3) Truncation errors for Euler, Improved Euler, Runge-Kutta solutions
     """
 
     def draw(self):
@@ -194,7 +201,7 @@ class NumericalMethods:
 """Read initial conditions from the console"""
 x0, X, y0, count = read()
 
-"""Create numerical methods for x0 = 0, X = 10, y0 = 1, count"""
+"""Create numerical methods for initial conditions, read from console"""
 num = NumericalMethods(x0, X, y0, count)
 
 """Calculate them"""
