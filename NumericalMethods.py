@@ -1,4 +1,5 @@
 import numpy as np
+from math import exp
 from matplotlib import pyplot as plt
 
 """
@@ -8,11 +9,38 @@ B17-02
 Vyacheslav Vasilev
 """
 
-"""Function that read count of steps from the console"""
+"""Function that read initial conditions from the console"""
 
 
 def read():
-    print("\nWrite down the number of steps below")
+    print("\nWrite down the x0 below")
+
+    while True:
+        try:
+            x0 = float(input())
+            break
+        except ValueError:
+            print("x0 must be a float value\nPlease, try again")
+
+    print("Write down the X below")
+
+    while True:
+        try:
+            X = float(input())
+            break
+        except ValueError:
+            print("X must be a float value\nPlease, try again")
+
+    print("Write down the y0 below")
+
+    while True:
+        try:
+            y0 = float(input())
+            break
+        except ValueError:
+            print("y0 must be a float value\nPlease, try again")
+
+    print("Write down the number of steps below")
 
     while True:
         try:
@@ -27,32 +55,33 @@ def read():
         except ValueError:
             print("Number of steps must be an integer value\nPlease, try again")
 
-    return count
+    return x0, X, y0, count
 
 
-"""Main class of our methods that contains all attributes and functions"""
+"""Class of our methods that contains all attributes and functions"""
 
 
 class NumericalMethods:
     """Constructor"""
 
-    def __init__(self, x0, x_last, y0, count):
+    def __init__(self, x0, X, y0, count):
         self.x0 = x0
-        self.x_last = x_last
+        self.X = X
         self.y0 = y0
         self.count = count
 
-        self.x = np.linspace(x0, x_last, count)  # x axis is the same for each method, so just x
+        self.x = np.linspace(x0, X, count)  # x-axis is the same for each method, so just x
         self.h = self.x[1] - self.x[0]  # step h
-        self.y1 = np.zeros(count)  # creating array of y's for each method and filling them by 0's
-        self.y2 = self.y1.copy()
-        self.y3 = self.y1.copy()
-        self.y4 = self.y1.copy()
-        self.y5 = self.y1.copy()
-        self.y6 = self.y1.copy()
-        self.y7 = self.y1.copy()
+        print(self.h)
+        self.y1 = np.zeros(count)  # creating array of y's for Euler method and filling it by 0's
+        self.y2 = self.y1.copy()  # creating array of y's for Improved Euler method and filling it by 0's
+        self.y3 = self.y1.copy()  # creating array of y's for Runge-Kutta method and filling it by 0's
+        self.y4 = self.y1.copy()  # creating array of y's for Exact method and filling it by 0's
+        self.y5 = self.y1.copy()  # creating array of y's for Euler's errors and filling it by 0's
+        self.y6 = self.y1.copy()  # creating array of y's for Improved Euler's errors and filling it by 0's
+        self.y7 = self.y1.copy()  # creating array of y's for Runge-Kutta's errors and filling it by 0's
 
-    """Euler method's function that calculate resulting graph's y axis and put it in y1 array"""
+    """Euler method's function that calculates resulting graph's y-axis and put it in the y1 array"""
 
     def euler(self):
         x = self.x
@@ -62,7 +91,7 @@ class NumericalMethods:
         for i in range(1, self.count):
             y[i] = y[i - 1] + h * (-x[i - 1] - y[i - 1])
 
-    """Improved Euler method's function that calculate resulting graph's y axis and put it in y2 array"""
+    """Improved Euler method's function that calculates resulting graph's y-axis and put it in the y2 array"""
 
     def improved_euler(self):
         x = self.x
@@ -72,7 +101,7 @@ class NumericalMethods:
         for i in range(1, self.count):
             y[i] = y[i - 1] + h * (-(x[i - 1] + (h / 2)) - (y[i - 1] + (h / 2) * (-x[i - 1] - y[i - 1])))
 
-    """Runge-Kutta method's function that calculate resulting graph's y axis and put it in y3 array"""
+    """Runge-Kutta method's function that calculates resulting graph's y-axis and put it in the y3 array"""
 
     def runge_kutta(self):
         x = self.x
@@ -87,26 +116,20 @@ class NumericalMethods:
 
             y[i] = y[i - 1] + (h / 6) * (k1 + 2 * k2 + 2 * k3 + k4)
 
-    """Exact solution's function that calculate resulting graph's y axis and put it in y4 array"""
+    """Exact solution's function that calculates resulting graph's y-axis and put it in the y4 array"""
 
     def exact(self):
         x = self.x
         y = self.y4
 
-        """
-        y = c * e^(-x) - x + 1
-        
-        for IVP, my exact solution is
-        
-        1 = c * e^(0) - 0 + 1     =>     c = 0
-        y = 0 * e^(-x) - x + 1
-        y = -x + 1
-        """
+        """y = c * e^(-x) - x + 1"""
+
+        c = (self.y0 + self.x0 - 1) / exp(-self.x0)
 
         for i in range(self.count):
-            y[i] = -x[i] + 1
+            y[i] = (c * exp(-x[i])) -x[i] + 1
 
-    """Function that calculate each plot"""
+    """Function that calculates each plot"""
 
     def calculate(self):
         self.euler()  # y for Euler
@@ -114,17 +137,13 @@ class NumericalMethods:
         self.runge_kutta()  # y for Runge-Kutta
         self.exact()  # y for Exact
 
-        np.zeros(self.count)
-        np.zeros(self.count)
-        np.zeros(self.count)
-
         for i in range(len(self.x)):
             self.y5[i] = self.y4[i] - self.y1[i]  # y for Euler truncation errors
             self.y6[i] = self.y4[i] - self.y2[i]  # y for Improved Euler truncation errors
             self.y7[i] = self.y4[i] - self.y3[i]  # y for Runge-Kutta truncation errors
 
     """
-    Function that draw 3 plots:
+    Function that draws 3 plots:
     1) Exact solution
     2) Euler, Improved Euler, Runge-Kutta solutions
     3) Truncation errors for 2)
@@ -172,11 +191,11 @@ class NumericalMethods:
         plt.show()
 
 
-"""Read count of steps from the console"""
-count = read()
+"""Read initial conditions from the console"""
+x0, X, y0, count = read()
 
 """Create numerical methods for x0 = 0, X = 10, y0 = 1, count"""
-num = NumericalMethods(0, 10, 1, count)
+num = NumericalMethods(x0, X, y0, count)
 
 """Calculate them"""
 num.calculate()
