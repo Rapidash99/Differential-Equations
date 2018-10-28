@@ -1,6 +1,7 @@
 import numpy as np
 from math import exp
 from matplotlib import pyplot as plt
+from matplotlib import ticker as tck
 
 """
 1st variant
@@ -58,7 +59,43 @@ def read():
         except ValueError:
             print("Number of steps must be an integer value\nPlease, try again")
 
-    return x0, X, y0, count
+    print("Write down the grid step by x below")
+
+    while True:
+        try:
+            x_step = float(input())
+            if x_step <= 0:
+                print("Grid step by x must be positive\nPlease, try again")
+                continue
+            elif x_step < 0.5:
+                print("Do you really want to choose this grid step?\nIt will be unreadable\nWrite again if you are sure\nWrite something other if you want to try again")
+                if x_step == float(input()):
+                    break
+                else:
+                    continue
+            break
+        except ValueError:
+            print("Grid step by x must be a float value\nPlease, try again")
+
+    print("Write down the grid step by y below")
+
+    while True:
+        try:
+            y_step = float(input())
+            if y_step <= 0:
+                print("Grid step by y must be positive\nPlease, try again")
+                continue
+            elif x_step < 1:
+                print("Do you really want to choose this grid step?\nIt will be unreadable\nWrite again if you are sure\nWrite something other if you want to try again")
+                if x_step == float(input()):
+                    break
+                else:
+                    continue
+            break
+        except ValueError:
+            print("Grid step by y must be a float value\nPlease, try again")
+
+    return x0, X, y0, count, x_step, y_step
 
 
 """Class of our methods that contains all attributes and functions"""
@@ -156,10 +193,14 @@ class NumericalMethods:
     3) Truncation errors for Euler, Improved Euler, Runge-Kutta solutions
     """
 
-    def draw(self):
+    def draw(self, x_step, y_step):
         """Drawing plot for exact solution"""
-        plt.subplot(311)
-        plt.plot(self.x, self.y4, 'm', label="Exact")
+
+        pl1 = plt.subplot(311)
+        pl1.plot(self.x, self.y4, 'm', label="Exact")
+
+        pl1.xaxis.set_major_locator(tck.MultipleLocator(base=x_step))
+        pl1.yaxis.set_major_locator(tck.MultipleLocator(base=y_step))
 
         plt.legend(loc='upper right')
         plt.grid(True)
@@ -170,10 +211,14 @@ class NumericalMethods:
         Drawing plots for Euler, Improved Euler, Runge-Kutta method's solutions
         They're the same for my differential equation y' = -y - x, so they're lie on each other
         """
-        plt.subplot(312)
-        plt.plot(self.x, self.y1, 'b', label="Euler")
-        plt.plot(self.x, self.y2, 'g', label="Improved Euler")
-        plt.plot(self.x, self.y3, 'r', label="Runge-Kutta")
+
+        pl2 = plt.subplot(312)
+        pl2.plot(self.x, self.y1, 'b', label="Euler")
+        pl2.plot(self.x, self.y2, 'g', label="Improved Euler")
+        pl2.plot(self.x, self.y3, 'r', label="Runge-Kutta")
+
+        pl2.xaxis.set_major_locator(tck.MultipleLocator(base=x_step))
+        pl2.yaxis.set_major_locator(tck.MultipleLocator(base=y_step))
 
         plt.legend(loc='upper right')
         plt.grid(True)
@@ -184,10 +229,13 @@ class NumericalMethods:
         Drawing plots of truncation errors for Euler, Improved Euler, Runge-Kutta method's solutions
         """
 
-        plt.subplot(313)
-        plt.plot(self.x, self.y5, 'b', label="Euler's Errors")
-        plt.plot(self.x, self.y6, 'g', label="Improved Euler's Errors")
-        plt.plot(self.x, self.y7, 'r', label="Runge-Kutta's Errors")
+        pl3 = plt.subplot(313)
+        pl3.plot(self.x, self.y5, 'b', label="Euler's Errors")
+        pl3.plot(self.x, self.y6, 'g', label="Improved Euler's Errors")
+        pl3.plot(self.x, self.y7, 'r', label="Runge-Kutta's Errors")
+
+        pl3.xaxis.set_major_locator(tck.MultipleLocator(base=x_step))
+        pl3.yaxis.set_major_locator(tck.MultipleLocator(base=y_step))
 
         plt.legend(loc='upper right')
         plt.grid(True)
@@ -198,8 +246,8 @@ class NumericalMethods:
         plt.show()
 
 
-"""Read initial conditions from the console"""
-x0, X, y0, count = read()
+"""Read initial conditions and grid steps from the console"""
+x0, X, y0, count, x_step, y_step = read()
 
 """Create numerical methods for initial conditions, read from console"""
 num = NumericalMethods(x0, X, y0, count)
@@ -207,5 +255,5 @@ num = NumericalMethods(x0, X, y0, count)
 """Calculate them"""
 num.calculate()
 
-"""Draw them"""
-num.draw()
+"""Draw them for grid steps x and y"""
+num.draw(x_step, y_step)
